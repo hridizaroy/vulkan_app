@@ -64,9 +64,8 @@ void Engine::make_instance()
 void Engine::make_device()
 {
 	physicalDevice = vkInit::choose_physical_device(instance, debugMode);
-
-	// Find queue families for device
-	vkInit::findQueueFamilies(physicalDevice, debugMode);
+	device = vkInit::create_logical_device(physicalDevice, debugMode);
+	graphicsQueue = vkInit::get_queue(physicalDevice, device, debugMode);
 }
 
 Engine::~Engine()
@@ -76,7 +75,12 @@ Engine::~Engine()
 		std::cout << "Bye!\n";
 	}
 
-	instance.destroyDebugUtilsMessengerEXT(debugMessenger, nullptr, dldi);
+	device.destroy();
+
+	if (debugMode)
+	{
+		instance.destroyDebugUtilsMessengerEXT(debugMessenger, nullptr, dldi);
+	}
 
 	instance.destroy();
 

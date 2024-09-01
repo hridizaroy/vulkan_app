@@ -35,6 +35,8 @@ private:
 
 	// Device related variables
 	vk::PhysicalDevice physicalDevice{ nullptr };
+	vk::Device device{ nullptr };
+	vk::Queue graphicsQueue{ nullptr };
 
 
 	// general

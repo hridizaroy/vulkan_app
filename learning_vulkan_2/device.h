@@ -210,4 +210,86 @@ namespace vkInit
 
 		return indices;
 	}
+
+
+	vk::Device create_logical_device(vk::PhysicalDevice physicalDevice, bool debug)
+	{
+		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, debug);
+
+		// Queue priority determines how GPU allocates its resources towards different queues
+		// in the same queue family
+		// 0.0 = lowest, 1.0 = highest
+		float queuePriority = 1.0f;
+
+		// Queue info
+		// flags, queue family index, queue count, pQueuePriorities
+		vk::DeviceQueueCreateInfo queueCreateInfo = vk::DeviceQueueCreateInfo(
+			vk::DeviceQueueCreateFlags(),
+			indices.graphicsFamily.value(),
+			1,
+			&queuePriority
+		);
+
+
+		// Device features
+		// We can enable features in this if we want
+		// e.g., deviceFeatures.samplerAnisotropy = true
+		vk::PhysicalDeviceFeatures deviceFeatures = vk::PhysicalDeviceFeatures();
+
+
+		// Enabled layers
+		std::vector<const char*> enabledLayers;
+
+		if (debug)
+		{
+			enabledLayers.push_back("VK_LAYER_KHRONOS_validation");
+		}
+
+
+		// Device Create info
+		// flags, queueCreateInfoCount, pQueueCreateInfos, enabledLayerCount, enabled layers,
+		// enabledExtensionCount, enabled extensions, pEnabledFeatures
+		vk::DeviceCreateInfo deviceInfo = vk::DeviceCreateInfo(
+			vk::DeviceCreateFlags(),
+			1, &queueCreateInfo,
+			enabledLayers.size(),
+			enabledLayers.data(),
+			0, nullptr,
+			&deviceFeatures
+		);
+
+
+		// Create the device
+		try
+		{
+			vk::Device device = physicalDevice.createDevice(deviceInfo);
+
+			if (debug)
+			{
+				std::cout << "Logical device created!\n";
+			}
+			
+			return device;
+		}
+		catch (vk::SystemError err)
+		{
+			if (debug)
+			{
+				std::cout << "Logical device creation failed.\n";
+
+				return nullptr;
+			}
+		}
+
+		return nullptr;
+	}
+
+
+	vk::Queue get_queue(vk::PhysicalDevice physicalDevice, vk::Device device, bool debug)
+	{
+		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, debug);
+
+		// queue family index, queue index
+		return device.getQueue(indices.graphicsFamily.value(), 0);
+	}
 }
