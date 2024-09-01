@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "instance.h"
 #include "logging.h"
+#include "device.h"
 
 Engine::Engine()
 {
@@ -16,7 +17,7 @@ Engine::Engine()
 
 	build_glfw_window();
 	make_instance();
-	make_debug_messenger();
+	make_device();
 }
 
 void Engine::build_glfw_window()
@@ -52,11 +53,17 @@ void Engine::make_instance()
 	instance = vkInit::make_instance(debugMode, appName);
 	
 	dldi = vk::DispatchLoaderDynamic(instance, vkGetInstanceProcAddr);
+
+	// Create Debug messenger
+	if (debugMode)
+	{
+		debugMessenger = vkInit::make_debug_messenger(instance, dldi);
+	}
 }
 
-void Engine::make_debug_messenger()
+void Engine::make_device()
 {
-	debugMessenger = vkInit::make_debug_messenger(instance, dldi);
+	physicalDevice = vkInit::choose_physical_device(instance, debugMode);
 }
 
 Engine::~Engine()

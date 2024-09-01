@@ -18,6 +18,7 @@ private:
 	int height{ 600 };
 	GLFWwindow* window{ nullptr };
 
+	// Instance related variables
 	// vulkan instance
 	vk::Instance instance{ nullptr };
 
@@ -31,8 +32,14 @@ private:
 	// We can create this at any point after the creation of the vulkan instance
 	vk::DispatchLoaderDynamic dldi;
 
+
+	// Device related variables
+	vk::PhysicalDevice physicalDevice{ nullptr };
+
+
 	// general
 	const char *appName;
+
 
 	// glfw setup
 	void build_glfw_window();
@@ -40,6 +47,6 @@ private:
 	// instance setup
 	void make_instance();
 
-	// Debug messenger
-	void make_debug_messenger();
+	// device setup
+	void make_device();
 };
