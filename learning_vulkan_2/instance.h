@@ -151,6 +151,11 @@ namespace vkInit
 
 		if (debug)
 		{
+			extensions.push_back("VK_EXT_debug_utils");
+		}
+
+		if (debug)
+		{
 			std::cout << "Extensions to be requested:\n";
 
 			for (const char* extensionName : extensions)
