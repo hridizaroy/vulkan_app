@@ -64,6 +64,9 @@ void Engine::make_instance()
 void Engine::make_device()
 {
 	physicalDevice = vkInit::choose_physical_device(instance, debugMode);
+
+	// Find queue families for device
+	vkInit::findQueueFamilies(physicalDevice, debugMode);
 }
 
 Engine::~Engine()
