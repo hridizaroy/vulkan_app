@@ -39,6 +39,10 @@ private:
 	vk::Device device{ nullptr };
 	vk::Queue graphicsQueue{ nullptr };
 	vk::Queue presentQueue{ nullptr };
+	vk::SwapchainKHR swapchain;
+	std::vector<vk::Image> swapchainImages;
+	vk::Format swapchainFormat;
+	vk::Extent2D swapchainExtent;
 
 
 	// general
