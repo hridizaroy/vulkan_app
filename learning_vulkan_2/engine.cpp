@@ -50,8 +50,10 @@ void Engine::build_glfw_window()
 
 void Engine::make_instance()
 {
+	// Create Vulkan instance
 	instance = vkInit::make_instance(debugMode, appName);
 	
+	// Create dispatch loader to assist with debug messenger
 	dldi = vk::DispatchLoaderDynamic(instance, vkGetInstanceProcAddr);
 
 	// Create Debug messenger
@@ -59,13 +61,31 @@ void Engine::make_instance()
 	{
 		debugMessenger = vkInit::make_debug_messenger(instance, dldi);
 	}
+
+	// Create surface
+	VkSurfaceKHR c_style_surface;
+	if (glfwCreateWindowSurface(instance, window, nullptr, &c_style_surface) != VK_SUCCESS)
+	{
+		if (debugMode)
+		{
+			std::cout << "Failed to abstract the glfw surface for Vulkan.\n";
+		}
+	}
+	else if (debugMode)
+	{
+		std::cout << "Successfully abstracted the glfw surface for Vulkan.\n";
+	}
+
+	surface = c_style_surface;
 }
 
 void Engine::make_device()
 {
 	physicalDevice = vkInit::choose_physical_device(instance, debugMode);
-	device = vkInit::create_logical_device(physicalDevice, debugMode);
-	graphicsQueue = vkInit::get_queue(physicalDevice, device, debugMode);
+	device = vkInit::create_logical_device(physicalDevice, surface, debugMode);
+	std::array<vk::Queue, 2> queues = vkInit::get_queue(physicalDevice, device, surface, debugMode);
+	graphicsQueue = queues[0];
+	presentQueue = queues[1];
 }
 
 Engine::~Engine()
@@ -77,6 +97,7 @@ Engine::~Engine()
 
 	device.destroy();
 
+	instance.destroySurfaceKHR(surface);
 	if (debugMode)
 	{
 		instance.destroyDebugUtilsMessengerEXT(debugMessenger, nullptr, dldi);

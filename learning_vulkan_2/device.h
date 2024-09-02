@@ -166,7 +166,7 @@ namespace vkInit
 	}
 
 
-	QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice device, bool debug)
+	QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice device, vk::SurfaceKHR surface, bool debug)
 	{
 		QueueFamilyIndices indices;
 
@@ -188,12 +188,19 @@ namespace vkInit
 			{
 				indices.graphicsFamily = idx;
 
-				// for now, assmume that graphics flag => ability to present to screen as well
+				if (debug)
+				{
+					std::cout << "Queue Family " << idx << " is suitable for graphics.\n";
+				}
+			}
+
+			if (device.getSurfaceSupportKHR(idx, surface))
+			{
 				indices.presentFamily = idx;
 
 				if (debug)
 				{
-					std::cout << "Queue Family " << idx << " is suitable for graphics and presenting.\n";
+					std::cout << "Queue Family " << idx << " is suitable for presenting.\n";
 				}
 			}
 
@@ -212,9 +219,18 @@ namespace vkInit
 	}
 
 
-	vk::Device create_logical_device(vk::PhysicalDevice physicalDevice, bool debug)
+	vk::Device create_logical_device(vk::PhysicalDevice physicalDevice, vk::SurfaceKHR surface, bool debug)
 	{
-		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, debug);
+		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface, debug);
+
+		// Get unique indices for queue families
+		std::vector<uint32_t> uniqueIndices;
+		uniqueIndices.push_back(indices.graphicsFamily.value());
+
+		if (indices.graphicsFamily.value() != indices.presentFamily.value())
+		{
+			uniqueIndices.push_back(indices.presentFamily.value());
+		}
 
 		// Queue priority determines how GPU allocates its resources towards different queues
 		// in the same queue family
@@ -223,12 +239,20 @@ namespace vkInit
 
 		// Queue info
 		// flags, queue family index, queue count, pQueuePriorities
-		vk::DeviceQueueCreateInfo queueCreateInfo = vk::DeviceQueueCreateInfo(
-			vk::DeviceQueueCreateFlags(),
-			indices.graphicsFamily.value(),
-			1,
-			&queuePriority
-		);
+		std::vector<vk::DeviceQueueCreateInfo> queueCreateInfo;
+
+		for (uint32_t queueFamilyIdx : uniqueIndices)
+		{
+			queueCreateInfo.push_back(
+				vk::DeviceQueueCreateInfo(
+					vk::DeviceQueueCreateFlags(),
+					queueFamilyIdx,
+					1,
+					&queuePriority
+				)
+			);
+		}
+
 
 
 		// Device features
@@ -251,7 +275,7 @@ namespace vkInit
 		// enabledExtensionCount, enabled extensions, pEnabledFeatures
 		vk::DeviceCreateInfo deviceInfo = vk::DeviceCreateInfo(
 			vk::DeviceCreateFlags(),
-			1, &queueCreateInfo,
+			queueCreateInfo.size(), queueCreateInfo.data(),
 			enabledLayers.size(),
 			enabledLayers.data(),
 			0, nullptr,
@@ -285,11 +309,15 @@ namespace vkInit
 	}
 
 
-	vk::Queue get_queue(vk::PhysicalDevice physicalDevice, vk::Device device, bool debug)
+	std::array<vk::Queue, 2> get_queue(vk::PhysicalDevice physicalDevice, vk::Device device, vk::SurfaceKHR surface, bool debug)
 	{
-		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, debug);
+		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface, debug);
 
 		// queue family index, queue index
-		return device.getQueue(indices.graphicsFamily.value(), 0);
+		return
+		{
+			device.getQueue(indices.graphicsFamily.value(), 0),
+			device.getQueue(indices.presentFamily.value(), 0)
+		};
 	}
 }

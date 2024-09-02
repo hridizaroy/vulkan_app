@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include <GLFW/glfw3.h>
 #include "config.h"
+#include <GLFW/glfw3.h>
 
 class Engine
 {
@@ -31,12 +31,14 @@ private:
 	// getInstanceProcAddr is used to load in the function to create or destroy the debug messenger
 	// We can create this at any point after the creation of the vulkan instance
 	vk::DispatchLoaderDynamic dldi;
+	vk::SurfaceKHR surface;
 
 
 	// Device related variables
 	vk::PhysicalDevice physicalDevice{ nullptr };
 	vk::Device device{ nullptr };
 	vk::Queue graphicsQueue{ nullptr };
+	vk::Queue presentQueue{ nullptr };
 
 
 	// general
