@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "config.h"
-#include <GLFW/glfw3.h>
 
 #include "frame.h"
 
