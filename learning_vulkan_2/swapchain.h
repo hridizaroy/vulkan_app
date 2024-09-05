@@ -3,6 +3,7 @@
 #include "config.h"
 #include "logging.h"
 #include "queue_families.h"
+#include "frame.h"
 
 
 namespace vkInit
@@ -17,7 +18,7 @@ namespace vkInit
 	struct SwapchainBundle
 	{
 		vk::SwapchainKHR swapchain;
-		std::vector<vk::Image> images;
+		std::vector<vkUtil::SwapchainFrame> frames;
 		vk::Format format;
 		vk::Extent2D extent;
 	};
@@ -235,7 +236,40 @@ namespace vkInit
 			throw std::runtime_error("Failed to create swapchain :/\n");
 		}
 
-		bundle.images = logicalDevice.getSwapchainImagesKHR(bundle.swapchain);
+
+		// Create imageviews for the swapchain
+		std::vector<vk::Image> images = logicalDevice.getSwapchainImagesKHR(bundle.swapchain);
+		
+		bundle.frames.resize(images.size());
+
+		for (size_t ii = 0; ii < images.size(); ii++)
+		{
+			vk::ImageViewCreateInfo createInfo = {};
+
+			createInfo.image = images[ii];
+			createInfo.viewType = vk::ImageViewType::e2D;
+
+			createInfo.components.r = vk::ComponentSwizzle::eIdentity;
+			createInfo.components.g = vk::ComponentSwizzle::eIdentity;
+			createInfo.components.b = vk::ComponentSwizzle::eIdentity;
+			createInfo.components.a = vk::ComponentSwizzle::eIdentity;
+
+			createInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+
+			// no mipmapping
+			createInfo.subresourceRange.baseMipLevel = 0;
+			createInfo.subresourceRange.levelCount = 1;
+
+			createInfo.subresourceRange.baseArrayLayer = 0;
+			createInfo.subresourceRange.layerCount = 1;
+
+			createInfo.format = format.format;
+
+
+			bundle.frames[ii].image = images[ii];
+			bundle.frames[ii].imageView = logicalDevice.createImageView(createInfo);
+		}
+
 		bundle.format = format.format;
 		bundle.extent = extent;
 

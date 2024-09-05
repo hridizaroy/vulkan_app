@@ -3,6 +3,8 @@
 #include "config.h"
 #include <GLFW/glfw3.h>
 
+#include "frame.h"
+
 class Engine
 {
 public:
@@ -40,7 +42,7 @@ private:
 	vk::Queue graphicsQueue{ nullptr };
 	vk::Queue presentQueue{ nullptr };
 	vk::SwapchainKHR swapchain;
-	std::vector<vk::Image> swapchainImages;
+	std::vector<vkUtil::SwapchainFrame> swapchainFrames;
 	vk::Format swapchainFormat;
 	vk::Extent2D swapchainExtent;
 

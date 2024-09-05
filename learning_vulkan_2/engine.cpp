@@ -7,6 +7,7 @@
 #include "device.h"
 #include "swapchain.h"
 
+
 Engine::Engine()
 {
 	if (debugMode)
@@ -96,7 +97,7 @@ void Engine::make_device()
 	// Swapchain
 	vkInit::SwapchainBundle bundle = vkInit::create_swapchain(device, physicalDevice, surface, width, height, debugMode);
 	swapchain = bundle.swapchain;
-	swapchainImages = bundle.images;
+	swapchainFrames = bundle.frames;
 	swapchainFormat = bundle.format;
 	swapchainExtent = bundle.extent;
 }
@@ -106,6 +107,11 @@ Engine::~Engine()
 	if (debugMode)
 	{
 		std::cout << "Bye!\n";
+	}
+
+	for (vkUtil::SwapchainFrame frame : swapchainFrames)
+	{
+		device.destroyImageView(frame.imageView);
 	}
 
 	device.destroySwapchainKHR(swapchain);
