@@ -6,6 +6,7 @@
 #include "logging.h"
 #include "device.h"
 #include "swapchain.h"
+#include "pipeline.h"
 
 
 Engine::Engine()
@@ -20,6 +21,7 @@ Engine::Engine()
 	build_glfw_window();
 	make_instance();
 	make_device();
+	make_pipeline();
 }
 
 void Engine::build_glfw_window()
@@ -102,12 +104,32 @@ void Engine::make_device()
 	swapchainExtent = bundle.extent;
 }
 
+void Engine::make_pipeline()
+{
+	vkInit::GraphicsPipelineInBundle specification = {};
+	specification.device = device;
+	specification.vertexFilepath = "../../../../learning_vulkan_2/shaders/vertex.spv";
+	specification.fragmentFilepath = "../../../../learning_vulkan_2/shaders/fragment.spv";
+	specification.swapchainExtent = swapchainExtent;
+	specification.swapchainImageFormat = swapchainFormat;
+
+	vkInit::GraphicsPipelineOutBundle output = vkInit::make_graphics_pipeline(specification, debugMode);
+	layout = output.layout;
+	renderpass = output.renderpass;
+	pipeline = output.pipeline;
+}
+
 Engine::~Engine()
 {
 	if (debugMode)
 	{
 		std::cout << "Bye!\n";
 	}
+
+	device.destroyPipeline(pipeline);
+	device.destroyPipelineLayout(layout);
+	device.destroyRenderPass(renderpass);
+
 
 	for (vkUtil::SwapchainFrame frame : swapchainFrames)
 	{

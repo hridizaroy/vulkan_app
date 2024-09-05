@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config.h"
+#include <filesystem>
 
 namespace vkUtil
 {
@@ -11,7 +12,8 @@ namespace vkUtil
 
 		if (debug && !file.is_open())
 		{
-			std::cout << "Failed to load \"" << filename << "\"" << std::endl;
+			std::filesystem::path cwd = std::filesystem::current_path();
+			std::cout << "Failed to load \"" << filename << "\"\nCWD: " << cwd << std::endl;
 		}
 
 		// Get number of bytes

@@ -49,6 +49,11 @@ private:
 	// general
 	const char *appName;
 
+	// pipeline-related variables
+	vk::PipelineLayout layout;
+	vk::RenderPass renderpass;
+	vk::Pipeline pipeline;
+
 
 	// glfw setup
 	void build_glfw_window();
@@ -58,4 +63,7 @@ private:
 
 	// device setup
 	void make_device();
+
+	// pipeline setup
+	void make_pipeline();
 };
