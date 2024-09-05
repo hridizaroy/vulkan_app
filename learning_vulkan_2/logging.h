@@ -251,4 +251,38 @@ This mode may result in visible tearing if rendering to the image is not timed c
 
 		return "none/undefined";
 	}
+
+
+	void log_device_properties(vk::PhysicalDevice& device)
+	{
+		// Get device properties
+		vk::PhysicalDeviceProperties properties = device.getProperties();
+
+		// log info about the device
+		std::cout << "Device name: " << properties.deviceName << "\n";
+
+		std::cout << "Device type: ";
+
+		switch (properties.deviceType)
+		{
+		case (vk::PhysicalDeviceType::eCpu):
+			std::cout << "CPU\n";
+			break;
+
+		case (vk::PhysicalDeviceType::eDiscreteGpu):
+			std::cout << "Discrete GPU\n";
+			break;
+
+		case (vk::PhysicalDeviceType::eIntegratedGpu):
+			std::cout << "Integrated GPU\n";
+			break;
+
+		case (vk::PhysicalDeviceType::eVirtualGpu):
+			std::cout << "Virtual GPU\n";
+			break;
+
+		default:
+			std::cout << "Other\n";
+		}
+	}
 }

@@ -5,6 +5,7 @@
 #include "instance.h"
 #include "logging.h"
 #include "device.h"
+#include "swapchain.h"
 
 Engine::Engine()
 {
