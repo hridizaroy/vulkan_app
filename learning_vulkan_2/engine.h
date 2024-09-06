@@ -58,6 +58,10 @@ private:
 	vk::CommandPool commandPool;
 	vk::CommandBuffer mainCommandBuffer;
 
+	// sync-related variables
+	vk::Semaphore imageAvailable, renderFinished;
+	vk::Fence inFlightFence;
+
 
 	// glfw setup
 	void build_glfw_window();

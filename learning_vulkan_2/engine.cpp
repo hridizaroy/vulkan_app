@@ -136,6 +136,10 @@ void Engine::finalize_setup()
 
 	vkInit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
 	mainCommandBuffer = vkInit::make_command_buffers(commandBufferInput, debugMode);
+
+	imageAvailable = vkInit::make_semaphore(device, debugMode);
+	renderFinished = vkInit::make_semaphore(device, debugMode);
+	inFlightFence = vkInit::make_fence(device, debugMode);
 }
 
 Engine::~Engine()
@@ -144,6 +148,10 @@ Engine::~Engine()
 	{
 		std::cout << "Bye!\n";
 	}
+
+	device.destroySemaphore(imageAvailable);
+	device.destroySemaphore(renderFinished);
+	device.destroyFence(inFlightFence);
 
 	device.destroyCommandPool(commandPool);
 
