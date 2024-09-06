@@ -94,7 +94,7 @@ void Engine::make_pipeline()
 
 	vkInit::GraphicsPipelineOutBundle output = vkInit::make_graphics_pipeline(specification, debugMode);
 	layout = output.layout;
-	renderpass = output.renderpass;
+	renderPass = output.renderpass;
 	pipeline = output.pipeline;
 }
 
@@ -102,7 +102,7 @@ void Engine::finalize_setup()
 {
 	vkInit::framebufferInput framebufferInput;
 	framebufferInput.device = device;
-	framebufferInput.renderpass = renderpass;
+	framebufferInput.renderpass = renderPass;
 	framebufferInput.swapchainExtent = swapchainExtent;
 	
 	vkInit::make_framebuffers(framebufferInput, swapchainFrames, debugMode);
@@ -117,8 +117,109 @@ void Engine::finalize_setup()
 	inFlightFence = vkInit::make_fence(device, debugMode);
 }
 
+void Engine::record_draw_commands(vk::CommandBuffer commandBuffer, uint32_t imageIndex)
+{
+	vk::CommandBufferBeginInfo beginInfo = {};
+
+	try
+	{
+		commandBuffer.begin(beginInfo);
+	}
+	catch (vk::SystemError err)
+	{
+		if (debugMode)
+		{
+			std::cout << "Failed to begin recording command buffer :/" << std::endl;
+		}
+	}
+
+	vk::RenderPassBeginInfo renderPassInfo = {};
+	renderPassInfo.renderPass = renderPass;
+	renderPassInfo.framebuffer = swapchainFrames[imageIndex].frameBuffer;
+	renderPassInfo.renderArea.offset.x = 0;
+	renderPassInfo.renderArea.offset.y = 0;
+	renderPassInfo.renderArea.extent = swapchainExtent;
+
+	vk::ClearValue clearColor = { std::array<float, 4>{0.2f, 0.1f, 0.9f, 1.0f} };
+	renderPassInfo.clearValueCount = 1;
+	renderPassInfo.pClearValues = &clearColor;
+
+	commandBuffer.beginRenderPass(&renderPassInfo, vk::SubpassContents::eInline);
+
+	commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+
+	commandBuffer.draw(3, 1, 0, 0);
+
+	commandBuffer.endRenderPass();
+
+	try
+	{
+		commandBuffer.end();
+	}
+	catch (vk::SystemError err)
+	{
+		if (debugMode)
+		{
+			std::cout << "Failed to finish recording command buffer :/" << std::endl;
+		}
+	}
+}
+
+void Engine::render()
+{
+	device.waitForFences(1, &inFlightFence, VK_TRUE, UINT64_MAX);
+	device.resetFences(1, &inFlightFence);
+
+	// Acquire next image
+	uint32_t imageIndex{ device.acquireNextImageKHR(swapchain, UINT64_MAX, imageAvailable, nullptr).value };
+
+	vk::CommandBuffer commandBuffer = swapchainFrames[imageIndex].commandBuffer;
+
+	commandBuffer.reset();
+
+	record_draw_commands(commandBuffer, imageIndex);
+
+	vk::SubmitInfo submitInfo = {};
+
+	vk::Semaphore waitSemaphores[] = { imageAvailable };
+	vk::PipelineStageFlags waitStages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = waitSemaphores;
+	submitInfo.pWaitDstStageMask = waitStages;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &commandBuffer;
+
+	vk::Semaphore signalSemaphores[] = { renderFinished };
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = signalSemaphores;
+
+	try
+	{
+		graphicsQueue.submit(submitInfo, inFlightFence);
+	}
+	catch (vk::SystemError err)
+	{
+		if (debugMode)
+		{
+			std::cout << "Failed to submit draw command buffer :/" << std::endl;
+		}
+	}
+
+	vk::PresentInfoKHR presentInfo = {};
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = signalSemaphores;
+	vk::SwapchainKHR swapchains[] = { swapchain };
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapchains;
+	presentInfo.pImageIndices = &imageIndex;
+
+	presentQueue.presentKHR(presentInfo);
+}
+
 Engine::~Engine()
 {
+	device.waitIdle(); // wait until device is idle
+
 	if (debugMode)
 	{
 		std::cout << "Bye!\n";
@@ -132,7 +233,7 @@ Engine::~Engine()
 
 	device.destroyPipeline(pipeline);
 	device.destroyPipelineLayout(layout);
-	device.destroyRenderPass(renderpass);
+	device.destroyRenderPass(renderPass);
 
 
 	for (const auto& frame : swapchainFrames)
