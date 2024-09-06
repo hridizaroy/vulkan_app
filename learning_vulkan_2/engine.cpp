@@ -125,7 +125,12 @@ void Engine::make_pipeline()
 
 void Engine::finalize_setup()
 {
-
+	vkInit::framebufferInput framebufferInput;
+	framebufferInput.device = device;
+	framebufferInput.renderpass = renderpass;
+	framebufferInput.swapchainExtent = swapchainExtent;
+	
+	vkInit::make_framebuffers(framebufferInput, swapchainFrames, debugMode);
 }
 
 Engine::~Engine()
@@ -143,6 +148,7 @@ Engine::~Engine()
 	for (vkUtil::SwapchainFrame frame : swapchainFrames)
 	{
 		device.destroyImageView(frame.imageView);
+		device.destroyFramebuffer(frame.frameBuffer);
 	}
 
 	device.destroySwapchainKHR(swapchain);

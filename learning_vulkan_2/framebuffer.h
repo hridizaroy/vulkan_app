@@ -26,6 +26,7 @@ namespace vkInit
 			framebufferInfo.pAttachments = attachments.data();
 			framebufferInfo.width = inputChunk.swapchainExtent.width;
 			framebufferInfo.height = inputChunk.swapchainExtent.height;
+			framebufferInfo.layers = 1;
 
 			try
 			{
@@ -45,5 +46,4 @@ namespace vkInit
 			}
 		}
 	}
-
 }
