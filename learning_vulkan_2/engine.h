@@ -66,4 +66,7 @@ private:
 
 	// pipeline setup
 	void make_pipeline();
+
+
+	void finalize_setup();
 };

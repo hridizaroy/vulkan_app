@@ -7,6 +7,9 @@
 #include "device.h"
 #include "swapchain.h"
 #include "pipeline.h"
+#include "framebuffer.h"
+#include "commands.h"
+#include "sync.h"
 
 
 Engine::Engine()
@@ -22,6 +25,7 @@ Engine::Engine()
 	make_instance();
 	make_device();
 	make_pipeline();
+	finalize_setup();
 }
 
 void Engine::build_glfw_window()
@@ -117,6 +121,11 @@ void Engine::make_pipeline()
 	layout = output.layout;
 	renderpass = output.renderpass;
 	pipeline = output.pipeline;
+}
+
+void Engine::finalize_setup()
+{
+
 }
 
 Engine::~Engine()
