@@ -42,6 +42,7 @@ void App::run()
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+		graphicsEngine->render();
 		calculateFrameRate();
 	}
 }
@@ -61,7 +62,7 @@ void App::calculateFrameRate()
 		glfwSetWindowTitle(window, title.str().c_str());
 
 		lastTime = currentTime;
-		numFrames = -1;
+		numFrames = -1; // Will be incremented right after this if block
 		frameTime = float(1000.0 / framerate); // seconds per frame * 1000 to get ms
 	}
 

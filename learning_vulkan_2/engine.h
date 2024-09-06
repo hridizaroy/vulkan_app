@@ -11,6 +11,8 @@ public:
 
 	~Engine();
 
+	void render();
+
 private:
 	bool debugMode;
 
@@ -51,7 +53,7 @@ private:
 
 	// pipeline-related variables
 	vk::PipelineLayout layout;
-	vk::RenderPass renderpass;
+	vk::RenderPass renderPass;
 	vk::Pipeline pipeline;
 
 	// command-related variables
@@ -72,6 +74,7 @@ private:
 	// pipeline setup
 	void make_pipeline();
 
-
 	void finalize_setup();
+
+	void record_draw_commands(vk::CommandBuffer commandBuffer, uint32_t imageIndex);
 };
