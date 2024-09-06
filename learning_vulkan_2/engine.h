@@ -54,6 +54,10 @@ private:
 	vk::RenderPass renderpass;
 	vk::Pipeline pipeline;
 
+	// command-related variables
+	vk::CommandPool commandPool;
+	vk::CommandBuffer mainCommandBuffer;
+
 
 	// glfw setup
 	void build_glfw_window();

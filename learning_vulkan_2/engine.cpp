@@ -131,6 +131,8 @@ void Engine::finalize_setup()
 	framebufferInput.swapchainExtent = swapchainExtent;
 	
 	vkInit::make_framebuffers(framebufferInput, swapchainFrames, debugMode);
+
+	commandPool = vkInit::make_command_pool(device, physicalDevice, surface, debugMode);
 }
 
 Engine::~Engine()
@@ -140,12 +142,14 @@ Engine::~Engine()
 		std::cout << "Bye!\n";
 	}
 
+	device.destroyCommandPool(commandPool);
+
 	device.destroyPipeline(pipeline);
 	device.destroyPipelineLayout(layout);
 	device.destroyRenderPass(renderpass);
 
 
-	for (vkUtil::SwapchainFrame frame : swapchainFrames)
+	for (const auto& frame : swapchainFrames)
 	{
 		device.destroyImageView(frame.imageView);
 		device.destroyFramebuffer(frame.frameBuffer);
