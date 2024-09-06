@@ -133,6 +133,9 @@ void Engine::finalize_setup()
 	vkInit::make_framebuffers(framebufferInput, swapchainFrames, debugMode);
 
 	commandPool = vkInit::make_command_pool(device, physicalDevice, surface, debugMode);
+
+	vkInit::commandBufferInputChunk commandBufferInput = { device, commandPool, swapchainFrames };
+	mainCommandBuffer = vkInit::make_command_buffers(commandBufferInput, debugMode);
 }
 
 Engine::~Engine()
