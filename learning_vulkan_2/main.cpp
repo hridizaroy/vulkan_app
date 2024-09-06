@@ -1,7 +1,11 @@
-#include "engine.h"
+#include "app.h"
 
 int main(int argc, char** argv)
 {
-	Engine engine;
+	App* hridizaApp = new App(640, 480, true);
+
+	hridizaApp->run();
+	delete hridizaApp;
+
 	return 0;
 }

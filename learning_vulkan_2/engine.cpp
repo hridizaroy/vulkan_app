@@ -12,48 +12,23 @@
 #include "sync.h"
 
 
-Engine::Engine()
+Engine::Engine(int width, int height, GLFWwindow* window, const char* appName, bool debugMode)
 {
+	this->width = width;
+	this->height = height;
+	this->window = window;
+	this->debugMode = debugMode;
+	this->appName = appName;
+
 	if (debugMode)
 	{
 		std::cout << "Creating our Graphics Engine\n";
 	}
 
-	appName = "Hridiza's Vulkan app";
-
-	build_glfw_window();
 	make_instance();
 	make_device();
 	make_pipeline();
 	finalize_setup();
-}
-
-void Engine::build_glfw_window()
-{
-	// initialize glfw
-	glfwInit();
-
-	// no default rendering client
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-	// Disable resizing for now
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-	// width, height, title, monitor, another window that want to share resources with
-	if (window = glfwCreateWindow(width, height, appName, nullptr, nullptr))
-	{
-		if (debugMode)
-		{
-			std::cout << "Successfully created a GLFW Window with width " << width << " and height " << height << "\n";
-		}
-	}
-	else
-	{
-		if (debugMode)
-		{
-			std::cout << "GLFW Window creation failed :/\n";
-		}
-	}
 }
 
 void Engine::make_instance()

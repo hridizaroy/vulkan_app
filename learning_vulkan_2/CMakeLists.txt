@@ -9,7 +9,7 @@ include_directories(
 
 
 # Add source to this project's executable.
-add_executable (learning_vulkan_2 "engine.cpp" "engine.h" "main.cpp" "instance.h" "config.h" "logging.h" "device.h" "queue_families.h" "frame.h" "shaders.h" "pipeline.h")
+add_executable (learning_vulkan_2 "engine.cpp" "engine.h" "main.cpp" "instance.h" "config.h" "logging.h" "device.h" "queue_families.h" "frame.h" "shaders.h" "pipeline.h" "app.h" "app.cpp")
 
 target_link_libraries(learning_vulkan_2 
   "${PROJECT_SOURCE_DIR}/third-party/glfw-3.4.bin.WIN64/lib-vc2022/glfw3.lib"

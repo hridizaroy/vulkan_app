@@ -7,17 +7,17 @@
 class Engine
 {
 public:
-	Engine();
+	Engine(int width, int height, GLFWwindow* window, const char* appName, bool debugMode);
 
 	~Engine();
 
 private:
-	bool debugMode = true;
+	bool debugMode;
 
 	// glfw window params
-	int width{ 800 };
-	int height{ 600 };
-	GLFWwindow* window{ nullptr };
+	int width;
+	int height;
+	GLFWwindow* window;
 
 	// Instance related variables
 	// vulkan instance
@@ -62,9 +62,6 @@ private:
 	vk::Semaphore imageAvailable, renderFinished;
 	vk::Fence inFlightFence;
 
-
-	// glfw setup
-	void build_glfw_window();
 
 	// instance setup
 	void make_instance();
