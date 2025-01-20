@@ -106,6 +106,7 @@ namespace vkInit
 
 		vk::PhysicalDevice chosenDevice = nullptr;
 
+		// TODO: create a priority list by device type and choose accordingly
 		// Check if any device is suitable
 		for (vk::PhysicalDevice device : availableDevices)
 		{
@@ -116,7 +117,14 @@ namespace vkInit
 
 			if (isSuitable(device, debug))
 			{
+				vk::PhysicalDeviceProperties properties = device.getProperties();
 				chosenDevice = device;
+
+				// Prioritize Discrete GPUs
+				if (properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu)
+				{
+					break;
+				}
 			}
 		}
 

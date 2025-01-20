@@ -31,7 +31,7 @@ namespace vkUtil
 
 		// Go through each device queue family and add indices accordingly
 		int idx = 0;
-		for (vk::QueueFamilyProperties queueFamily : queueFamilies)
+		for (const vk::QueueFamilyProperties& queueFamily : queueFamilies)
 		{
 			// check if this is a graphics queue family
 			if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
