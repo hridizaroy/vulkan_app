@@ -4,6 +4,8 @@
 
 #include "frame.h"
 
+#include "scene.h"
+
 class Engine
 {
 public:
@@ -11,7 +13,7 @@ public:
 
 	~Engine();
 
-	void render();
+	void render(Scene* scene);
 
 private:
 	bool debugMode;
@@ -74,5 +76,5 @@ private:
 
 	void finalize_setup();
 
-	void record_draw_commands(vk::CommandBuffer commandBuffer, uint32_t imageIndex);
+	void record_draw_commands(vk::CommandBuffer commandBuffer, uint32_t imageIndex, Scene* scene);
 };

@@ -2,7 +2,8 @@
 
 #include "config.h"
 #include "shaders.h"
-
+#include "pipeline.h"
+#include "render_structs.h"
 
 namespace vkInit
 {
@@ -28,7 +29,14 @@ namespace vkInit
 		vk::PipelineLayoutCreateInfo layoutInfo;
 		layoutInfo.flags = vk::PipelineLayoutCreateFlags();
 		layoutInfo.setLayoutCount = 0;
-		layoutInfo.pushConstantRangeCount = 0;
+
+		// Push constants
+		layoutInfo.pushConstantRangeCount = 1;
+		vk::PushConstantRange pushConstantInfo;
+		pushConstantInfo.offset = 0;
+		pushConstantInfo.size = sizeof(vkUtil::ObjectData);
+		pushConstantInfo.stageFlags = vk::ShaderStageFlagBits::eVertex;
+		layoutInfo.pPushConstantRanges = &pushConstantInfo;
 
 		try
 		{
