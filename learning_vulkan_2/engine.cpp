@@ -154,15 +154,25 @@ void Engine::record_draw_commands(vk::CommandBuffer commandBuffer, uint32_t imag
 
 	commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
 
-	for (glm::vec3& position : scene->trianglePositions)
-	{
-		glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
-		vkUtil::ObjectData objectData;
-		objectData.model = model;
+	//for (glm::vec3& position : scene->trianglePositions)
+	//{
+	//	glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
+	//	vkUtil::ObjectData objectData;
+	//	objectData.model = model;
 
-		commandBuffer.pushConstants(layout, vk::ShaderStageFlagBits::eVertex, 0, sizeof(objectData), & objectData);
-		commandBuffer.draw(3, 1, 0, 0);
-	}
+	//	commandBuffer.pushConstants(layout, vk::ShaderStageFlagBits::eVertex, 0, sizeof(objectData), & objectData);
+	//	commandBuffer.draw(3, 1, 0, 0);
+	//}
+
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	vkUtil::ObjectData objectData;
+	objectData.model = model;
+	commandBuffer.pushConstants(layout, vk::ShaderStageFlagBits::eVertex, 0, sizeof(objectData), &objectData);
+
+	commandBuffer.draw(6, 1, 0, 0);
+
+	/*commandBuffer.pushConstants(layout, vk::ShaderStageFlagBits::eVertex, 0, sizeof(objectData), &objectData);
+	commandBuffer.draw(3, 1, 0, 0);*/
 
 	commandBuffer.endRenderPass();
 

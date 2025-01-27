@@ -2,7 +2,6 @@
 
 Scene::Scene()
 {
-	int ii = 0;
 	for (int x = -10; x < 10; x += 2)
 	{
 		for (int y = -10; y < 10; y += 2)
